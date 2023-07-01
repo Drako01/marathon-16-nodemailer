@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer'
+import Mailgen from 'mailgen'
 import dotenv from 'dotenv'
 dotenv.config()
 
@@ -40,11 +41,37 @@ export const getbill = async (req, res) => {
         }
     }
     let transporter = nodemailer.createTransport(config)
+    let Mailgenerator = new Mailgen({
+        theme: 'default',
+        product: {
+            name: 'Mailgen',
+            link: 'http://www.coderhouse.com'
+        }
+    })
+
+    let response = {
+        body: {
+            intro: 'Your bill has arrived!',
+            table: {
+                data: [
+                    { 
+                        item: 'Bicicleta de 2 ruedas',
+                        description: 'Linda bicicleta para bicletear',
+                        price: 'USD10.99'
+                    }
+                ]
+            },
+            outro: 'Looking forward to do more business...'
+        }
+    }
+
+    let mail = Mailgenerator.generate(response)
+
     let message = {
         from: process.env.GMAIL_USER,
         to: emailUser,
         subject: 'Compra realizada',
-        html: '<h1>gracias por tu compra!</h1>'
+        html: mail
     }
 
     try {
